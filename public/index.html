@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="sr-Latn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kampanje na jednom mestu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <section id="login" hidden>
+    <form id="loginForm" class="login">
+      <h1>Kampanje</h1>
+      <p class="lead">Prijavite se da biste videli rezultate Instagram i Google kampanja.</p>
+      <label class="field"><span>Email</span><input type="email" id="email" autocomplete="username" required></label>
+      <label class="field"><span>Lozinka</span><input type="password" id="password" autocomplete="current-password" required></label>
+      <p class="status err" id="loginErr" role="alert"></p>
+      <button class="btn primary" type="submit">Prijavi se</button>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <header class="top">
+      <div>
+        <h1>Kampanje na jednom mestu</h1>
+        <p class="lead">Instagram i Google Ads u jednom pregledu. Podaci se osvežavaju automatski.</p>
+      </div>
+      <div class="tools">
+        <span class="who" id="who"></span>
+        <button class="btn admin-only" id="syncBtn" type="button">Osveži podatke</button>
+        <button class="btn ghost" id="logout" type="button">Odjavi se</button>
+      </div>
+    </header>
+
+    <section class="sources" aria-label="Izvori podataka">
+      <article class="source" data-key="meta">
+        <div class="source-head"><span class="dot" style="background:var(--ig)"></span><h2>Instagram (Meta Ads)</h2></div>
+        <p class="status" data-status>Učitavanje</p>
+        <p class="hint" data-meta></p>
+        <div class="row admin-only">
+          <label class="btn">Uvezi CSV<input class="vh" type="file" accept=".csv,.tsv,.txt,text/csv" data-file></label>
+          <button class="link" type="button" data-remove hidden>Ukloni uvezene CSV podatke</button>
+        </div>
+      </article>
+      <article class="source" data-key="google">
+        <div class="source-head"><span class="dot" style="background:var(--gg)"></span><h2>Google Ads</h2></div>
+        <p class="status" data-status>Učitavanje</p>
+        <p class="hint" data-meta></p>
+        <div class="row admin-only">
+          <label class="btn">Uvezi CSV<input class="vh" type="file" accept=".csv,.tsv,.txt,text/csv" data-file></label>
+          <button class="link" type="button" data-remove hidden>Ukloni uvezene CSV podatke</button>
+        </div>
+      </article>
+      <article class="source" data-key="ga4">
+        <div class="source-head"><span class="dot" style="background:var(--ga)"></span><h2>Google Analytics</h2></div>
+        <p class="status" data-status>Učitavanje</p>
+        <p class="hint" data-meta></p>
+      </article>
+    </section>
+
+    <div class="filters">
+      <label class="field"><span>Od</span><input type="date" id="from"></label>
+      <label class="field"><span>Do</span><input type="date" id="to"></label>
+      <div class="seg" role="group" aria-label="Period" id="presets">
+        <button type="button" data-days="7" aria-pressed="false">7 dana</button>
+        <button type="button" data-days="30" aria-pressed="true">30 dana</button>
+        <button type="button" data-days="90" aria-pressed="false">90 dana</button>
+      </div>
+      <div class="seg" role="group" aria-label="Platforma" id="plat">
+        <button type="button" data-plat="all" aria-pressed="true">Sve</button>
+        <button type="button" data-plat="meta" aria-pressed="false">Instagram</button>
+        <button type="button" data-plat="google" aria-pressed="false">Google</button>
+      </div>
+      <label class="field grow"><span>Pretraga kampanja</span><input type="search" id="q" placeholder="Naziv kampanje"></label>
+    </div>
+
+    <section id="empty" class="empty" hidden>
+      <h2>Nema podataka za izabrani period</h2>
+      <p id="emptyText"></p>
+    </section>
+
+    <div id="report" hidden>
+      <div class="band" id="band"></div>
+      <div class="charts">
+        <section class="panel" id="trend"></section>
+        <section class="panel" id="share"></section>
+      </div>
+      <section class="panel">
+        <div class="panel-head">
+          <h2>Sve kampanje</h2>
+          <button class="btn" id="copy" type="button">Kopiraj tabelu</button>
+        </div>
+        <div class="tablewrap" id="table"></div>
+      </section>
+    </div>
+
+    <div id="gaReport" hidden>
+      <div class="section-head">
+        <h2>Sajt (Google Analytics)</h2>
+        <div class="seg" role="group" aria-label="Saobraćaj" id="gaScope">
+          <button type="button" data-scope="all" aria-pressed="true">Sav saobraćaj</button>
+          <button type="button" data-scope="paid" aria-pressed="false">Samo plaćeni</button>
+        </div>
+      </div>
+      <div class="band" id="gaBand"></div>
+      <section class="panel gap">
+        <div class="panel-head"><h2>Izvori saobraćaja</h2></div>
+        <div class="tablewrap" id="gaTable"></div>
+      </section>
+      <section class="panel" id="joinPanel" hidden>
+        <div class="panel-head"><h2>Oglasi i sajt</h2></div>
+        <p class="hint">Klikovi iz oglasa i sesije iz Google Analytics-a povezuju se po nazivu kampanje (utm_campaign) i izvoru saobraćaja. Brojke se ne moraju poklapati, jer platforme i GA4 različito pripisuju konverzije.</p>
+        <div class="tablewrap" id="joinTable"></div>
+        <p class="hint pad-s" id="joinNote"></p>
+      </section>
+    </div>
+
+    <section class="panel users-panel" id="usersPanel" hidden>
+      <div class="panel-head"><h2>Korisnici</h2></div>
+      <div class="tablewrap" id="usersTable"></div>
+      <form id="userForm" class="userform">
+        <label class="field"><span>Email</span><input type="email" id="uEmail" required autocomplete="off"></label>
+        <label class="field"><span>Lozinka (bar 10 znakova)</span><input type="password" id="uPass" minlength="10" required autocomplete="new-password"></label>
+        <label class="field"><span>Uloga</span>
+          <select id="uRole"><option value="viewer">Pregled</option><option value="admin">Administrator</option></select>
+        </label>
+        <button class="btn primary" type="submit">Sačuvaj korisnika</button>
+      </form>
+      <p class="hint pad-s">Ako uneseš email koji već postoji, menjaju se njegova lozinka i uloga.</p>
+    </section>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="/app.js"></script>
+</body>
+</html>

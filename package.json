@@ -1,0 +1,29 @@
+{
+  "name": "kampanje-portal",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portal koji spaja Instagram (Meta Ads) i Google Ads kampanje",
+  "main": "index.js",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "dev": "node dev.js",
+    "add-user": "node scripts/add-user.js",
+    "google-auth": "node scripts/google-auth.js",
+    "sync": "node scripts/sync-now.js",
+    "test": "node test/run.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^18.0.1",
+    "express": "^4.22.3",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8"
+  }
+}
